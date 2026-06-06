@@ -1,0 +1,22 @@
+{
+    "NAVEGACION": {
+    "escritorio uno": ["qtile", "cmd-obj", "-o", "group", "1", "-f", "toscreen"],
+    "escritorio dos": ["qtile", "cmd-obj", "-o", "group", "2", "-f", "toscreen"],
+    "escritorio tres": ["qtile", "cmd-obj", "-o", "group", "3", "-f", "toscreen"],
+    "escritorio cuatro": ["qtile", "cmd-obj", "-o", "group", "4", "-f", "toscreen"],
+    "escritorio cinco": ["qtile", "cmd-obj", "-o", "group", "5", "-f", "toscreen"],
+    "siguiente escritorio": ["qtile", "cmd-obj", "-o", "screen", "-f", "next_group"],
+    "escritorio anterior": ["qtile", "cmd-obj", "-o", "screen", "-f", "prev_group"]
+  },
+
+  "VENTANAS": {
+    "cierra ventana": ["qtile", "cmd-obj", "-o", "window", "-f", "kill"],
+    "maximiza ventana": ["qtile", "cmd-obj", "-o", "window", "-f", "toggle_fullscreen"],
+
+    "mueve ventana a uno": ["qtile", "cmd-obj", "-o", "window", "-f", "togroup", "-a", "1"],
+    "mueve ventana a dos": ["qtile", "cmd-obj", "-o", "window", "-f", "togroup", "-a", "2"],
+    "mueve ventana a tres": ["qtile", "cmd-obj", "-o", "window", "-f", "togroup", "-a", "3"],
+    "mueve ventana a cuatro": ["qtile", "cmd-obj", "-o", "window", "-f", "togroup", "-a", "4"],
+    "mueve ventana a cinco": ["qtile", "cmd-obj", "-o", "window", "-f", "togroup", "-a", "5"]
+  }
+}

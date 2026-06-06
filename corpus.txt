@@ -1,0 +1,57 @@
+oye pc
+abre firefox
+abre terminal
+abre vscode
+abre alacritty
+subir volumen
+bajar volumen
+cierra ventana
+cambia escritorio
+abre spotify
+abre discord
+silenciar
+activar sonido
+salir
+mueve a uno
+mueve a dos
+mueve a tres
+mueve a cuatro
+mueve a cinco
+mueve a seis
+mueve a siete
+mueve a ocho
+mueve a nueve
+mueve a diez
+ir a uno
+ir a dos
+ir a tres
+ir a cuatro
+ir a cinco
+ir a seis
+ir a siete
+ir a ocho
+ir a nueve
+ir a diez
+siguiente escritorio
+escritorio anterior
+cierra ventana
+maximiza ventana
+modo estudio
+modo
+modo debug
+alacritty
+maximiza
+debug
+firefox
+recarga comandos
+lutris
+steam
+siguiente cancion
+cancion anterior
+pausa
+reanuda
+busca sii
+busca teams
+busca gmail
+busca chatgpt
+mover

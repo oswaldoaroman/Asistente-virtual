@@ -1,0 +1,34 @@
+{
+  "reemplazos": {
+    "kitail": "qtile",
+    "kiteil": "qtile",
+    "alakriti": "alacritty",
+    "viskod": "vscode",
+    "vis code": "vscode",
+    "p c": "pc",
+    "pecé": "pc",
+    "pisi": "pc",
+    "bajar":"baja"
+  },
+
+  "SONIDO": {
+    "sube volumen": ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+"],
+    "baja volumen": ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%-"],
+    "silencio": ["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]
+  },
+
+  "MULTIMEDIA":{
+    "siguiente cancion": ["playerctl","next"],
+    "cancion anterior": ["playerctl","previous"],
+    "pausa":["playerctl","pause"],
+    "reanuda":["playerctl","play"]
+  },
+
+  "LANZARAPP": {
+    "abre firefox": ["firefox"],
+    "abre terminal": ["alacritty"],
+    "abre spotify": ["spotify-launcher"],
+    "abre discord": ["discord"],
+    "abre steam": ["steam"]
+  }
+}

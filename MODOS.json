@@ -1,0 +1,13 @@
+{
+  "modo estudio": [
+    ["qtile", "cmd-obj", "-o", "group", "1", "-f", "toscreen"],
+    ["firefox", "https://chatgpt.com"],
+    ["code"],
+    ["alacritty"],
+    ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "50%"]
+  ],
+  "modo debug": [
+  ["notify-send", "Asistente", "Modo debug activado"],
+  ["alacritty"]
+]
+}

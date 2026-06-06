@@ -1,0 +1,32 @@
+{
+    "NAVEGACION": {
+        "ir a uno": ["hyprctl", "dispatch", "workspace","1"],
+        "ir a dos": ["hyprctl", "dispatch", "workspace","2"],
+        "ir a tres": ["hyprctl", "dispatch", "workspace","3"],
+        "ir a cuatro": ["hyprctl", "dispatch", "workspace","4"],
+        "ir a cinco": ["hyprctl", "dispatch","workspace","5"],
+        "ir a seis": ["hyprctl", "dispatch","workspace","6"],
+        "ir a siete": ["hyprctl", "dispatch","workspace","7"],
+        "ir a ocho": ["hyprctl", "dispatch","workspace","8"],
+        "ir a nueve": ["hyprctl", "dispatch","workspace","9"],
+        "ir a diez": ["hyprctl", "dispatch","workspace","0"],
+        "siguiente escritorio": ["hyprctl", "dispatch","workspace", "m+1"],
+        "escritorio anterior": ["hyprctl", "dispatch","workspace", "m-1"]
+  },
+   "VENTANAS": {
+        "cierra ventana": ["hyprctl", "dispatch", "killactive"],
+        "cierra todo": [ "sh", "-c","hyprctl clients -j | jq -r '.[] | .address' | ","xargs -I{} hyprctl dispatch closewindow address:{}"],
+        "maximiza ventana": ["hyprctl", "dispatch", "fullscreen"],
+
+        "mover a uno": ["hyprctl", "dispatch", "movetoworkspace","1"],
+        "mover a dos": ["hyprctl", "dispatch", "movetoworkspace","2"],
+        "mover a tres": ["hyprctl", "dispatch", "movetoworkspace","3"],
+        "mover a cuatro": ["hyprctl", "dispatch", "movetoworkspace","4"],
+        "mover a cinco": ["hyprctl", "dispatch", "movetoworkspace","5"],
+        "mover a seis": ["hyprctl", "dispatch", "movetoworkspace","6"],
+        "mover a siete": ["hyprctl", "dispatch", "movetoworkspace","7"],
+        "mover a ocho": ["hyprctl", "dispatch", "movetoworkspace","8"],
+        "mover a nueve": ["hyprctl", "dispatch", "movetoworkspace","9"],
+        "mover a diez": ["hyprctl", "dispatch", "movetoworkspace","0"]
+  }
+}
