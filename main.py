@@ -1,116 +1,61 @@
-import logging
+import subprocess,time,json,logging
+from config.logging_config import logging
+from speech.vosk_enginer import VoskEngine
+from Comandos.comander_loader import leer_corpus
+from config.setting import MODELO
+from actions.voice_actions import VoiceActions
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
-    datefmt="%H:%M:%S",
-    force=True
-)
-
-
-from asistente import AsistenteVoz
-from config import MIC_ID,SAMPLE_RATE,PALABRA_ACTIVACION
-import sounddevice as sd
-import time 
-import subprocess
-import json
-import logging
-
-asistente = AsistenteVoz()
+voiceActions=VoiceActions()
 
 logging.info("Asistente de voz iniciado")
 
-def activar_asistente(texto, asistente):
-    if not asistente.activo and PALABRA_ACTIVACION in texto:
-        asistente.activo = True
-        asistente.tiempo_activacion = time.time()
+
+vosk = VoskEngine(MODELO, 16000, leer_corpus())
+proceso = subprocess.Popen(
+    [
+        "parecord",
+        "--raw",
+        "--rate=16000",
+        "--channels=1",
+        "--format=s16le"
+    ],
+    stdout=subprocess.PIPE
+)
+logging.info(" El asistente esta en funcionamiento")
+
+
+while True:
+    #data = VoskEngine.q.get()
+    data = proceso.stdout.read(4000)
+
+    if vosk.push_audio(data):
+        texto = json.loads(vosk.get_result()).get("text", "").strip()
+        if not texto:
+            continue
+
+        logging.info(f"Texto reconocido: {texto}")
+
+        if voiceActions.activo==False:
+            if voiceActions.activacion_y_comando(texto):
+                logging.info("Asistente activado y comando ejecutado")
+                voiceActions.tiempo_activacion = time.time()
+
+        if voiceActions.activo==False:
+            if voiceActions.activar_asistente(texto):
+                logging.info("Asistente activado")
+                voiceActions.tiempo_activacion = time.time()
+        else:
+            if voiceActions.desactivar_asistente():
+                logging.info("Asistente desactivado por inactividad")
+                continue
+
+            if voiceActions.ejecutar_comando(texto):
+                logging.info(f"Comando ejecutado: {texto}")
+                continue
+
+            if voiceActions.ejecutar_modos(texto, voiceActions):
+                logging.info(f"Modo ejecutado: {texto}")
+                continue
+
         
-        return True
-    return False
-
-
-def ejecutar_comando(texto, asistente):
-    for clave, cmd in asistente.COMANDOS.items():
-        if clave in texto:
-            #print(f"▶ Ejecutando: {clave}")
-            subprocess.Popen(cmd)
-            asistente.activo = False
-            return True
-    return False
-
-
-def activacion_y_comando(texto, asistente):
-    if PALABRA_ACTIVACION not in texto:
-        return False
-
-    for clave, cmd in asistente.COMANDOS.items():
-        if clave in texto:
-            asistente.activo = True
-            asistente.tiempo_activacion = time.time()
-            #print(f"▶ Ejecutando: {clave} {cmd}")
-            subprocess.Popen(cmd)
-            asistente.activo = False
-            #print ("[DEBUG] Entro en funcion activacion y comando")
-            return True
-    
-    return False
-
-
-
-def ejecutarModos(texto,asistente):
-    if "modo" in texto:
-        print(type(asistente.MODOS))
-        for modo,cmd in asistente.MODOS.items():
-            if modo in texto:
-                print(f"Ejecutando modo:",{modo})
-                for comando in cmd:
-                    subprocess.Popen(comando)
-
-
-
-
-with sd.RawInputStream(
-    device=MIC_ID,
-    samplerate=SAMPLE_RATE,
-    blocksize=8000,
-    dtype="int16",
-    channels=1,
-    callback=asistente.callback
-):
-    logging.info(" El asistente esta en funcionamiento")
-
-    while True:
-        data = asistente.q.get()
-
-        if asistente.rec.AcceptWaveform(data):
-            texto = json.loads(asistente.rec.Result()).get("text", "").strip()
-
-            if not texto:
-                continue
-    
-            #print(f"[DEBUG] Se escucho: ",texto)
-            
-            if asistente.activo:
-                if comando_buscar(texto):
-                    asistente.activo = False
-                continue
-
-            if activacion_y_comando(texto, asistente):
-                continue
-            
-            if activar_asistente(texto, asistente):
-                continue
-
-            if asistente.activo:
-                ejecutar_comando(texto, asistente)
-
-            if asistente.activo:
-                ejecutarModos(texto, asistente)
-
-            # if asistente.activo and "recarga comandos" in texto:
-            #     asistente.leercomandos()
-            #     print("Se han recargado los archivos")
-
-        if asistente.activo and time.time() - asistente.tiempo_activacion > asistente.TIMEOUT:
-            asistente.activo = False
 
