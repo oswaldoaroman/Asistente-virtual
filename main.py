@@ -35,27 +35,4 @@ while True:
 
         logging.info(f"Texto reconocido: {texto}")
 
-        if voiceActions.activo==False:
-            if voiceActions.activacion_y_comando(texto):
-                logging.info("Asistente activado y comando ejecutado")
-                voiceActions.tiempo_activacion = time.time()
-
-        if voiceActions.activo==False:
-            if voiceActions.activar_asistente(texto):
-                logging.info("Asistente activado")
-                voiceActions.tiempo_activacion = time.time()
-        else:
-            if voiceActions.desactivar_asistente():
-                logging.info("Asistente desactivado por inactividad")
-                continue
-
-            if voiceActions.ejecutar_comando(texto):
-                logging.info(f"Comando ejecutado: {texto}")
-                continue
-
-            if voiceActions.ejecutar_modos(texto, voiceActions):
-                logging.info(f"Modo ejecutado: {texto}")
-                continue
-
-        
-
+        voiceActions.procesar(texto)

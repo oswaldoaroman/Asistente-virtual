@@ -1,30 +1,41 @@
-# actions/voice_actions.py
 import time
 import subprocess
 from Comandos.comander_loader import leer_comandos, leer_modos
-from config.setting import PALABRA_ACTIVACION,TIMEOUT,SESION
+from config.setting import PALABRA_ACTIVACION, TIMEOUT, SESION
+
 
 class VoiceActions:
     def __init__(self):
         self.COMANDOS = leer_comandos(SESION)
-        self.MODOS =leer_modos()
-        self.tiempo_activo=time.time()
-        self.tiempo_limite=TIMEOUT
+        self.MODOS = leer_modos()
+
         self.activo = False
-        
-    def activar_asistente(self, texto, palabra_activacion=PALABRA_ACTIVACION):
-        if not self.activo and palabra_activacion in texto:
+        self.tiempo_activacion = 0
+        self.timeout = TIMEOUT
+
+    # -------------------------
+    # ACTIVACIÓN
+    # -------------------------
+    def activar(self, texto: str) -> bool:
+        if PALABRA_ACTIVACION in texto:
             self.activo = True
+            self.tiempo_activacion = time.time()
             return True
-        
-    def desactivar_asistente(self):
-        if self.activo and time.time() - self.tiempo_activacion > self.tiempo_limite:
+        return False
+
+    # -------------------------
+    # TIMEOUT
+    # -------------------------
+    def check_timeout(self):
+        if self.activo and (time.time() - self.tiempo_activacion > self.timeout):
             self.activo = False
             return True
         return False
 
-
-    def ejecutar_comando(self, texto):
+    # -------------------------
+    # COMANDOS NORMALES
+    # -------------------------
+    def ejecutar_comando(self, texto: str) -> bool:
         for clave, cmd in self.COMANDOS.items():
             if clave in texto:
                 subprocess.Popen(cmd)
@@ -32,27 +43,40 @@ class VoiceActions:
                 return True
         return False
 
-    def activacion_y_comando(self, texto, palabra_activacion=PALABRA_ACTIVACION):
-        if palabra_activacion not in texto:
+    # -------------------------
+    # MODOS (estudio/debug/etc)
+    # -------------------------
+    def ejecutar_modos(self, texto: str) -> bool:
+        if "modo" not in texto:
             return False
 
-        for clave, cmd in self.COMANDOS.items():
-            if clave in texto:
-                self.activo = True
-                self.tiempo_activacion = time.time()
-                subprocess.Popen(cmd)
-                self.activo = False
+        for modo, cmd_list in self.MODOS.items():
+            if modo in texto:
+                for cmd in cmd_list:
+                    subprocess.Popen(cmd)
                 return True
+
         return False
 
-    def ejecutar_modos(texto, asistente):
-        if "modo" in texto:
-            for modo, cmd_list in asistente.MODOS.items():
-                if modo in texto:
-                    for comando in cmd_list:
-                        subprocess.Popen(comando)
-                    return True
-        return False
+    # -------------------------
+    # FLUJO PRINCIPAL
+    # -------------------------
+    def procesar(self, texto: str):
+        # 1. Timeout siempre se revisa
+        self.check_timeout()
 
+        # 2. Si es modo, ejecuta directo
+        if self.ejecutar_modos(texto):
+            return
+
+        # 3. Si no está activo, intenta activar
+        if not self.activo:
+            if self.activar(texto):
+                return
+            return
+
+        # 4. Si está activo, ejecuta comandos
+        if self.ejecutar_comando(texto):
+            return
 
 
