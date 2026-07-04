@@ -1,8 +1,6 @@
 oye pc
 abre firefox
 abre terminal
-abre vscode
-abre alacritty
 subir volumen
 bajar volumen
 cierra ventana
@@ -35,23 +33,15 @@ ir a diez
 siguiente escritorio
 escritorio anterior
 cierra ventana
-maximiza ventana
 modo estudio
-modo
-modo debug
-alacritty
-maximiza
-debug
-firefox
 recarga comandos
-lutris
 steam
 siguiente cancion
 cancion anterior
 pausa
 reanuda
-busca sii
-busca teams
-busca gmail
-busca chatgpt
 mover
+whatsapp
+youtube 
+ia 
+am

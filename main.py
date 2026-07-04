@@ -1,11 +1,24 @@
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+    datefmt="%H:%M:%S",
+    force=True
+)
+
+
 from asistente import AsistenteVoz
 from config import MIC_ID,SAMPLE_RATE,PALABRA_ACTIVACION
 import sounddevice as sd
 import time 
 import subprocess
 import json
+import logging
 
 asistente = AsistenteVoz()
+
+logging.info("Asistente de voz iniciado")
 
 def activar_asistente(texto, asistente):
     if not asistente.activo and PALABRA_ACTIVACION in texto:
@@ -19,7 +32,7 @@ def activar_asistente(texto, asistente):
 def ejecutar_comando(texto, asistente):
     for clave, cmd in asistente.COMANDOS.items():
         if clave in texto:
-            print(f"▶ Ejecutando: {clave}")
+            #print(f"▶ Ejecutando: {clave}")
             subprocess.Popen(cmd)
             asistente.activo = False
             return True
@@ -34,7 +47,7 @@ def activacion_y_comando(texto, asistente):
         if clave in texto:
             asistente.activo = True
             asistente.tiempo_activacion = time.time()
-            print(f"▶ Ejecutando: {clave} {cmd}")
+            #print(f"▶ Ejecutando: {clave} {cmd}")
             subprocess.Popen(cmd)
             asistente.activo = False
             #print ("[DEBUG] Entro en funcion activacion y comando")
@@ -42,13 +55,7 @@ def activacion_y_comando(texto, asistente):
     
     return False
 
-def comando_buscar(texto):
-    if texto.startswith("busca "):
-        termino = texto.replace("busca ", "").strip()
-        if termino:
-            subprocess.Popen(["firefox", termino])
-            return True
-    return False
+
 
 def ejecutarModos(texto,asistente):
     if "modo" in texto:
@@ -59,18 +66,8 @@ def ejecutarModos(texto,asistente):
                 for comando in cmd:
                     subprocess.Popen(comando)
 
-def comando_buscar(texto):
-    if texto.startswith("busca "):
-        termino = texto.replace("busca ", "").strip()
-        if termino:
-            subprocess.Popen(["firefox", termino])
-            return True
-    return False
 
 
-# def recargarComandos(texto,asistente):
-#     if ("regarcar comandos"):
-#         asistente.leercomandos()
 
 with sd.RawInputStream(
     device=MIC_ID,
@@ -80,19 +77,18 @@ with sd.RawInputStream(
     channels=1,
     callback=asistente.callback
 ):
-    print("[Debug] El asistente esta en funcionamiento")
+    logging.info(" El asistente esta en funcionamiento")
 
     while True:
         data = asistente.q.get()
 
         if asistente.rec.AcceptWaveform(data):
             texto = json.loads(asistente.rec.Result()).get("text", "").strip()
-            texto = asistente.normalizar(texto)
 
             if not texto:
                 continue
     
-            print(f"[DEBUG] Se escucho: ",texto)
+            #print(f"[DEBUG] Se escucho: ",texto)
             
             if asistente.activo:
                 if comando_buscar(texto):
@@ -114,9 +110,6 @@ with sd.RawInputStream(
             # if asistente.activo and "recarga comandos" in texto:
             #     asistente.leercomandos()
             #     print("Se han recargado los archivos")
-
-            if asistente.activo and "salir" in texto:
-                break
 
         if asistente.activo and time.time() - asistente.tiempo_activacion > asistente.TIMEOUT:
             asistente.activo = False

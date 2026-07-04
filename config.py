@@ -1,7 +1,9 @@
+import logging
+logger  = logging.getLogger(__name__)
+
 import os
 import sounddevice as sd
-import json
-import copy
+
 
 nombreMicrofono="GENERAL WEBCAM: USB Audio"
 nombreBocina="SSS USB Speaker: Audio"
@@ -22,10 +24,10 @@ def detectarMicrofo(nombreMicrofono):
             nombreMicrofono.lower() in dispositivo["name"].lower() 
             and dispositivo["max_input_channels"]>0
             ):
-            print("Se encontro la webcam")
+            logging.info("Se encontro la webcam")
             return dispositivo["index"],int (dispositivo["default_samplerate"])
     
-    raise RuntimeError("No se ha encontrado un microfono valido")
+    raise logging.error("No se ha encontrado un microfono valido")
 
 # for dispositivo in sd.query_devices():
 #     #print(f"Diccionario exterior",a)

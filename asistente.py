@@ -1,8 +1,9 @@
+import logging
+logger  = logging.getLogger(__name__)
+
 import queue
 import json
-
 from vosk import Model, KaldiRecognizer
-
 from config import SAMPLE_RATE,MODELO,SESION
 
 class AsistenteVoz:
@@ -13,7 +14,7 @@ class AsistenteVoz:
 
         self.q = queue.Queue()
         self.sesion=SESION
-        self.COMANDOS, self.reemplazos = self.leercomandos()
+        self.COMANDOS= self.leercomandos()
         self.MODOS=self.leerModos()
         
         with open("corpus.txt") as f:
@@ -26,6 +27,7 @@ class AsistenteVoz:
     def callback(self, indata, frames, time, status):
         if status:
             print(status)
+            logging.error("Error en el callback del microfono")
         self.q.put(bytes(indata))
 
     def leercomandos(self):
@@ -37,11 +39,11 @@ class AsistenteVoz:
             self.sesion=="x11"):
             with open("qtile.json","r", encoding="utf-8") as comands:
                 comandsSesion=json.load(comands)
-                print("Se cargaron los comando del archivo qtile")
+                logging.info("Backend de comandos cargado: Qtile")
         else:
             with open("hyprland.json","r", encoding="utf-8") as comands:
                 comandsSesion=json.load(comands)
-                print("Se cargaron los comando del archivo de hyprland")
+                logging.info("Backend de comandos cargado: Hyprland")
             
 
         COMANDOS = {
@@ -52,16 +54,11 @@ class AsistenteVoz:
             **comandsSesion["VENTANAS"],
         }
 
-        return COMANDOS, data["reemplazos"]
+        return COMANDOS
     
     def leerModos(self):
         with open("MODOS.json", "r", encoding="utf-8") as f:
             MODOS = json.load(f)
         return MODOS
 
-    def normalizar(self, texto):
-        for k, v in self.reemplazos.items():
-            texto = texto.replace(k, v)
-        return texto
-    
 
