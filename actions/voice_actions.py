@@ -2,6 +2,7 @@ import time
 import subprocess
 from Comandos.comander_loader import leer_comandos, leer_modos
 from config.setting import PALABRA_ACTIVACION, TIMEOUT, SESION
+import logging
 
 
 class VoiceActions:
@@ -13,9 +14,7 @@ class VoiceActions:
         self.tiempo_activacion = 0
         self.timeout = TIMEOUT
 
-    # -------------------------
-    # ACTIVACIÓN
-    # -------------------------
+    # Activación por palabra clave
     def activar(self, texto: str) -> bool:
         if PALABRA_ACTIVACION in texto:
             self.activo = True
@@ -23,18 +22,14 @@ class VoiceActions:
             return True
         return False
 
-    # -------------------------
     # TIMEOUT
-    # -------------------------
     def check_timeout(self):
         if self.activo and (time.time() - self.tiempo_activacion > self.timeout):
             self.activo = False
             return True
         return False
 
-    # -------------------------
-    # COMANDOS NORMALES
-    # -------------------------
+    # Ejecutar comandos
     def ejecutar_comando(self, texto: str) -> bool:
         for clave, cmd in self.COMANDOS.items():
             if clave in texto:
@@ -43,9 +38,7 @@ class VoiceActions:
                 return True
         return False
 
-    # -------------------------
-    # MODOS (estudio/debug/etc)
-    # -------------------------
+    # ejecutar modos (estudio/debug/etc) *Falta implementar los modos*
     def ejecutar_modos(self, texto: str) -> bool:
         if "modo" not in texto:
             return False
@@ -58,9 +51,8 @@ class VoiceActions:
 
         return False
 
-    # -------------------------
-    # FLUJO PRINCIPAL
-    # -------------------------
+    
+    # Procesar el texto reconocido
     def procesar(self, texto: str):
         # 1. Timeout siempre se revisa
         self.check_timeout()
@@ -72,11 +64,12 @@ class VoiceActions:
         # 3. Si no está activo, intenta activar
         if not self.activo:
             if self.activar(texto):
-                return
+                return self.procesar(texto)  # Reprocesar el texto después de activar
             return
-
-        # 4. Si está activo, ejecuta comandos
+            
+        # # 4. Si está activo, ejecuta comandos
         if self.ejecutar_comando(texto):
-            return
-
+            logging.info("Comando ejecutado correctamente")
+            return 
+      
 
