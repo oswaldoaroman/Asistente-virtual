@@ -1,16 +1,24 @@
 import json
 import logging
+from pathlib import Path
+
+comandos = Path.home() / "asistente-voz/Comandos/comandos.json"
+qtile = Path.home() / "asistente-voz/Comandos/qtile.json"
+hypr = Path.home() / "asistente-voz/Comandos/hyprland.json"
+modos= Path.home() / "asistente-voz/Comandos/MODOS.json"
+corpus= Path.home() / "/home/Apatosaurio19/asistente-voz/corpus.txt"
 
 def leer_comandos(sesion):
-    with open("/home/Apatosaurio19/asistente-voz/Comandos/comandos.json", "r", encoding="utf-8") as f:
+    with open(comandos, "r", encoding="utf-8") as f:
         data = json.load(f)
+        logging.info("Comandos cargados")
 
     if (sesion not in ("hyprland", "wayland")) and sesion == "x11":
-        with open("/home/Apatosaurio19/asistente-voz/Comandos/qtile.json", "r", encoding="utf-8") as comands:
+        with open(qtile, "r", encoding="utf-8") as comands:
             comands_sesion = json.load(comands)
         logging.info("Backend de comandos cargado: Qtile")
     else:
-        with open("/home/Apatosaurio19/asistente-voz/Comandos/hyprland.json", "r", encoding="utf-8") as comands:
+        with open(hypr, "r", encoding="utf-8") as comands:
             comands_sesion = json.load(comands)
         logging.info("Backend de comandos cargado: Hyprland")
 
@@ -23,9 +31,12 @@ def leer_comandos(sesion):
     }
 
 def leer_modos():
-    with open("/home/Apatosaurio19/asistente-voz/Comandos/MODOS.json", "r", encoding="utf-8") as f:
+    with open(modos, "r", encoding="utf-8") as f:
         return json.load(f)
 
-def leer_corpus(path="/home/Apatosaurio19/asistente-voz/corpus.txt"):
-    with open(path, "r", encoding="utf-8") as f:
+def leer_corpus():
+    with open(corpus, "r", encoding="utf-8") as f:
+        logging.info("Corpus cargado")
         return [l.strip() for l in f if l.strip()]
+
+leer_comandos("hyprland")

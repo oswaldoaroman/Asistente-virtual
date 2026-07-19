@@ -2,7 +2,7 @@ import os
 import sounddevice as sd
 
 # Backend de comandos y configuraciones
-def detectarSesion():
+def detectar_sesion():
     if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
         return "hyprland"
     if os.environ.get("WAYLAND_DISPLAY"):
