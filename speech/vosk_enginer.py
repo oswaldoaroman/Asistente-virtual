@@ -1,7 +1,5 @@
 import json
 from vosk import Model, KaldiRecognizer
-from Comandos.comander_loader import leer_corpus
-
 
 class VoskEngine:
     def __init__(self, modelo_path, sample_rate, corpus_lines):
