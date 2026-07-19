@@ -194,4 +194,4 @@ No está afiliado con Vosk, Hyprland ni OpenAI.
 
 ## Autor
 
-Desarrollado por **Oswaldo Abimael Flores Román**.
+Desarrollado por **Oswaldo Abimael Flores Roman**.
