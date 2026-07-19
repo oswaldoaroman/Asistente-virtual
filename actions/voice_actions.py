@@ -2,14 +2,14 @@ import time
 import subprocess
 from Comandos.comander_loader import leer_comandos, leer_modos
 from config.setting import PALABRA_ACTIVACION, TIMEOUT, SESION
+from actions.change_state import cambiar_estado
 import logging
 
 
 class VoiceActions:
     def __init__(self):
-        self.COMANDOS = leer_comandos(SESION)
-        self.MODOS = leer_modos()
-
+        self.comandos = leer_comandos(SESION)
+        self.modos = leer_modos()
         self.activo = False
         self.tiempo_activacion = 0
         self.timeout = TIMEOUT
@@ -19,6 +19,7 @@ class VoiceActions:
         if PALABRA_ACTIVACION in texto:
             self.activo = True
             self.tiempo_activacion = time.time()
+            cambiar_estado("activo")
             return True
         return False
 
@@ -26,16 +27,19 @@ class VoiceActions:
     def check_timeout(self):
         if self.activo and (time.time() - self.tiempo_activacion > self.timeout):
             self.activo = False
+            cambiar_estado("inactivo")
             return True
         return False
 
     # Ejecutar comandos
     def ejecutar_comando(self, texto: str) -> bool:
-        for clave, cmd in self.COMANDOS.items():
+        for clave, cmd in self.comandos.items():
             if clave in texto:
+                cambiar_estado("ejecutando")
                 subprocess.Popen(cmd)
                 self.activo = False
                 return True
+            cambiar_estado("comando no reconocido")
         return False
 
     # ejecutar modos (estudio/debug/etc) *Falta implementar los modos*
@@ -43,7 +47,7 @@ class VoiceActions:
         if "modo" not in texto:
             return False
 
-        for modo, cmd_list in self.MODOS.items():
+        for modo, cmd_list in self.modos.items():
             if modo in texto:
                 for cmd in cmd_list:
                     subprocess.Popen(cmd)

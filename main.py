@@ -41,7 +41,6 @@ logging.info(" El asistente esta en funcionamiento")
 
 # #=============OPenWakeWord================#
 # frame = proceso
-
 # # Get predictions for the frame
 # prediction = model.predict(proceso)
 # #=========================================#
@@ -57,5 +56,4 @@ while True:
             continue
 
         logging.info(f"Texto reconocido: {texto}")
-
         voiceActions.procesar(texto)
