@@ -1,46 +1,58 @@
-import time
 import subprocess
-from Comandos.comander_loader import leer_comandos, leer_modos
-from config.setting import PALABRA_ACTIVACION, TIMEOUT, SESION
-from actions.change_state import cambiar_estado
+import time
 import logging
-
+from Comandos.comander_loader import leer_comandos, leer_modos
+from config.setting import (
+    PALABRA_ACTIVACION,
+    TIMEOUT,
+    SESION,
+)
+from actions.change_state import (
+    cambiar_estado,
+    ESTADO_INACTIVO,
+    ESTADO_ESCUCHANDO,
+    ESTADO_EJECUTANDO,
+)
 
 class VoiceActions:
     def __init__(self):
         self.comandos = leer_comandos(SESION)
         self.modos = leer_modos()
         self.activo = False
-        self.tiempo_activacion = 0
         self.timeout = TIMEOUT
+        self.tiempo_activacion = 0
 
-    # Activación por palabra clave
-    def activar(self, texto: str) -> bool:
+    ## Activar el asistente si se detecta la palabra de activación
+    def activar(self, texto):
         if PALABRA_ACTIVACION in texto:
             self.activo = True
             self.tiempo_activacion = time.time()
+            cambiar_estado(ESTADO_ESCUCHANDO)
             return True
         return False
 
-    # TIMEOUT
+    ## Verificar si el asistente ha estado activo por más tiempo del permitido
     def check_timeout(self):
-        if self.activo and (time.time() - self.tiempo_activacion > self.timeout):
-            cambiar_estado("inactivo")
+        if (
+            self.activo and
+            time.time() - self.tiempo_activacion > self.timeout
+        ):
             self.activo = False
+            cambiar_estado(ESTADO_INACTIVO)
             return True
         return False
 
-    # Ejecutar comandos
-    def ejecutar_comando(self, texto: str) -> bool:
-        for clave, cmd in self.comandos.items():
+    ## Ejecutar un comando si se encuentra en el texto reconocido
+    def ejecutar_comando(self, texto):
+        for clave, comando in self.comandos.items():
             if clave in texto:
-                subprocess.Popen(cmd)
+                cambiar_estado(ESTADO_EJECUTANDO)
+                subprocess.Popen(comando)
                 self.activo = False
+                cambiar_estado(ESTADO_INACTIVO)
                 return True
-            #cambiar_estado("comando no reconocido")
         return False
 
-    # ejecutar modos (estudio/debug/etc) *Falta implementar los modos*
     def ejecutar_modos(self, texto: str) -> bool:
         if "modo" not in texto:
             return False
@@ -53,8 +65,8 @@ class VoiceActions:
 
         return False
 
-    
-    # Procesar el texto reconocido
+
+        # Procesar el texto reconocido
     def procesar(self, texto: str):
         # 1. Timeout siempre se revisa
         self.check_timeout()
@@ -66,13 +78,11 @@ class VoiceActions:
         # 3. Si no está activo, intenta activar
         if not self.activo:
             if self.activar(texto):
-                cambiar_estado("activo")
                 return self.procesar(texto)  # Reprocesar el texto después de activar
             return
             
         # # 4. Si está activo, ejecuta comandos
         if self.ejecutar_comando(texto):
-            cambiar_estado("ejecutando")
             logging.info("Comando ejecutado correctamente")
             return 
       

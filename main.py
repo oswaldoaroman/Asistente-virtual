@@ -5,22 +5,13 @@ from speech.vosk_enginer import VoskEngine
 from Comandos.comander_loader import leer_corpus
 from config.setting import MODELO
 from actions.voice_actions import VoiceActions
-
-# import openwakeword
-# from openwakeword.model import Model
-
-# # One-time download of all pre-trained models (or only select models)
-# openwakeword.utils.download_models()
-
-# # Instantiate the model(s)
-# model = Model(
-# #         wakeword_models=["path/to/model.tflite"],  # can also leave this argument empty to load all of the included pre-trained models
-# )
-
-# # Get audio data containing 16-bit 16khz PCM audio data from a file, microphone, network stream, etc.
-# # For the best efficiency and latency, audio frames should be multiples of 80 ms, with longer frames
-# # increasing overall efficiency at the cost of detection latency
-
+from actions.change_state import (
+    cambiar_estado,
+    ESTADO_INACTIVO,
+    ESTADO_ESCUCHANDO,
+    ESTADO_EJECUTANDO,
+    ESTADO_PROCESANDO
+)
 
 voiceActions=VoiceActions()
 
@@ -40,21 +31,15 @@ proceso = subprocess.Popen(
 )
 logging.info(" El asistente esta en funcionamiento")
 
-# #=============OPenWakeWord================#
-# frame = proceso
-# # Get predictions for the frame
-# prediction = model.predict(proceso)
-# #=========================================#
-
-
 while True:
     #data = VoskEngine.q.get()
     data = proceso.stdout.read(4000)
 
     if vosk.push_audio(data):
+        cambiar_estado(ESTADO_PROCESANDO)
         texto = json.loads(vosk.get_result()).get("text", "").strip()
         if not texto:
+            cambiar_estado(ESTADO_INACTIVO)
             continue
-
         logging.info(f"Texto reconocido: {texto}")
         voiceActions.procesar(texto)
