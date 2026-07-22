@@ -45,3 +45,5 @@ whatsapp
 youtube 
 ia 
 am
+github
+git

@@ -19,6 +19,7 @@
     "abre discord": ["systemd-run", "--user", "discord"],
     "abre whatsapp": ["systemd-run", "--user", "chromium", "--app=https://web.whatsapp.com/"],
     "abre youtube": ["systemd-run", "--user", "chromium", "--app=https://www.youtube.com/"],
-    "abre ia": ["systemd-run", "--user", "chromium", "--app=https://chat.openai.com/"]
+    "abre ia": ["systemd-run", "--user", "chromium", "--app=https://chat.openai.com/"],
+    "abre git": ["systemd-run", "--user", "chromium", "--app=https://github.com/"]
   }
 }

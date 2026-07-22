@@ -1,4 +1,5 @@
 import subprocess,time,json,logging
+from actions.change_state import cambiar_estado
 from config.logging_config import logging
 from speech.vosk_enginer import VoskEngine
 from Comandos.comander_loader import leer_corpus

@@ -6,7 +6,7 @@ comandos = Path.home() / "asistente-voz/Comandos/comandos.json"
 qtile = Path.home() / "asistente-voz/Comandos/qtile.json"
 hypr = Path.home() / "asistente-voz/Comandos/hyprland.json"
 modos= Path.home() / "asistente-voz/Comandos/MODOS.json"
-corpus= Path.home() / "/home/Apatosaurio19/asistente-voz/corpus.txt"
+corpus= Path.home() / "asistente-voz/corpus.txt"
 
 def leer_comandos(sesion):
     with open(comandos, "r", encoding="utf-8") as f:

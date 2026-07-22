@@ -19,15 +19,14 @@ class VoiceActions:
         if PALABRA_ACTIVACION in texto:
             self.activo = True
             self.tiempo_activacion = time.time()
-            cambiar_estado("activo")
             return True
         return False
 
     # TIMEOUT
     def check_timeout(self):
         if self.activo and (time.time() - self.tiempo_activacion > self.timeout):
-            self.activo = False
             cambiar_estado("inactivo")
+            self.activo = False
             return True
         return False
 
@@ -35,11 +34,10 @@ class VoiceActions:
     def ejecutar_comando(self, texto: str) -> bool:
         for clave, cmd in self.comandos.items():
             if clave in texto:
-                cambiar_estado("ejecutando")
                 subprocess.Popen(cmd)
                 self.activo = False
                 return True
-            cambiar_estado("comando no reconocido")
+            #cambiar_estado("comando no reconocido")
         return False
 
     # ejecutar modos (estudio/debug/etc) *Falta implementar los modos*
@@ -68,11 +66,13 @@ class VoiceActions:
         # 3. Si no está activo, intenta activar
         if not self.activo:
             if self.activar(texto):
+                cambiar_estado("activo")
                 return self.procesar(texto)  # Reprocesar el texto después de activar
             return
             
         # # 4. Si está activo, ejecuta comandos
         if self.ejecutar_comando(texto):
+            cambiar_estado("ejecutando")
             logging.info("Comando ejecutado correctamente")
             return 
       
