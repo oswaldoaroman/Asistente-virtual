@@ -11,7 +11,7 @@ class BrowserSkill(BaseSkill):
             for comando in (
                 "navegador",
                 "youtube",
-                "github",
+                "git",
                 "whatsapp",
                 "ia"
             )

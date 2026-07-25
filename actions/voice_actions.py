@@ -39,26 +39,10 @@ class VoiceActions:
             return True
         return False
 
-    
-
-    def ejecutar_modos(self, texto: str) -> bool:
-        if "modo" not in texto:
-            return False
-        for modo, cmd_list in self.modos.items():
-            if modo in texto:
-                for cmd in cmd_list:
-                    subprocess.Popen(cmd)
-                return True
-        return False
-
         # Procesar el texto reconocido
     def procesar(self, texto: str):
         # 1. Timeout siempre se revisa
         self.check_timeout()
-
-        # 2. Si es modo, ejecuta directo
-        if self.ejecutar_modos(texto):
-            return
 
         # 3. Si no está activo, intenta activar
         if not self.activo:

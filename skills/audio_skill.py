@@ -1,59 +1,126 @@
-from skills.base_skill import BaseSkill
+import re
 import subprocess
+
+from skills.base_skill import BaseSkill
 
 
 class AudioSkill(BaseSkill):
-    def can_handle(self, texto):
-        claves = (
-            "sube volumen",
-            "baja volumen",
-            "silencio",
-            "siguiente cancion",
-            "cancion anterior",
-            "pausa",
-            "reanuda",
+    INTENCIONES = (
+        "cambia",
+        "usar",
+        "usa",
+        "pon",
+        "cambiar",
+    )
+
+    def can_handle(self, texto: str) -> bool:
+        texto = texto.lower()
+        return any(palabra in texto for palabra in self.INTENCIONES)
+
+    def execute(self, texto: str) -> bool:
+        dispositivo = self.buscar_dispositivo(texto)
+        if dispositivo is None:
+            print("No encontré ningún dispositivo parecido.")
+            return False
+        print(f"Cambiando salida a: {dispositivo['nombre']}")
+        subprocess.run(
+            [
+                "wpctl",
+                "set-default",
+                str(dispositivo["id"])
+            ]
         )
-        return any(k in texto for k in claves)
+        return True
 
-    def execute(self, texto):
-        # SONIDO
-        if "sube volumen" in texto:
-            subprocess.Popen(
-                ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+"]
+    ###########################################################
+
+    def obtener_dispositivos(self):
+        salida = subprocess.check_output(
+            ["wpctl", "status"],
+            text=True
+        )
+        dispositivos = []
+        dentro_sinks = False
+        for linea in salida.splitlines():
+            if "Sinks:" in linea:
+                dentro_sinks = True
+                continue
+            if dentro_sinks:
+                if "Sources:" in linea:
+                    break
+                match = re.search(
+                    r"(\d+)\.\s+(.+?)\s+\[",
+                    linea
+                )
+                if match:
+
+                    dispositivos.append(
+                        {
+                            "id": int(match.group(1)),
+                            "nombre": match.group(2),
+                            "aliases": self.generar_aliases(
+                                match.group(2)
+                            )
+                        }
+                    )
+        return dispositivos
+
+    ###########################################################
+
+    def generar_aliases(self, nombre):
+        nombre = nombre.lower()
+        aliases = set()
+        palabras = re.findall(r"[a-zA-Z0-9]+", nombre)
+        aliases.update(palabras)
+        if "speaker" in nombre:
+            aliases.update(
+                [
+                    "bocina",
+                    "altavoz",
+                    "usb",
+                    "estereo",
+                    "speaker"
+                ]
             )
-            return True
-
-        if "baja volumen" in texto:
-            subprocess.Popen(
-                ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%-"]
+        if "hdmi" in nombre:
+            aliases.update(
+                [
+                    "hdmi",
+                    "monitor",
+                    "pantalla"
+                ]
             )
-            return True
-
-        if "silencio" in texto:
-            subprocess.Popen(
-                ["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]
+        if (
+            "head" in nombre
+            or "headset" in nombre
+            or "hyperx" in nombre
+        ):
+            aliases.update(
+                [
+                    "audifonos",
+                    "cascos",
+                    "headset",
+                    "diadema"
+                ]
             )
-            return True
+        return aliases
 
-        # MULTIMEDIA
-        if "siguiente cancion" in texto:
-            subprocess.Popen(["playerctl", "next"])
-            return True
+    ###########################################################
 
-        if "cancion anterior" in texto:
-            subprocess.Popen(["playerctl", "previous"])
-            return True
-
-        if "pausa" in texto:
-            subprocess.Popen(["playerctl", "pause"])
-            return True
-
-        if "reanuda" in texto:
-            subprocess.Popen(["playerctl", "play"])
-            return True
-
-        return False
-
+    def buscar_dispositivo(self, texto):
+        texto = texto.lower()
+        dispositivos = self.obtener_dispositivos()
+        mejor = None
+        puntuacion = 0
+        for dispositivo in dispositivos:
+            score = 0
+            for alias in dispositivo["aliases"]:
+                if alias in texto:
+                    score += 1
+            if score > puntuacion:
+                puntuacion = score
+                mejor = dispositivo
+        return mejor
 
 def create():
     return AudioSkill()
