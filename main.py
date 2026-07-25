@@ -2,14 +2,11 @@ import subprocess,time,json,logging
 from actions.change_state import cambiar_estado
 from config.logging_config import logging
 from speech.vosk_enginer import VoskEngine
-from Comandos.comander_loader import leer_corpus
-from config.setting import MODELO
+from config.setting import MODELO, leer_corpus
 from actions.voice_actions import VoiceActions
 from actions.change_state import (
     cambiar_estado,
     ESTADO_INACTIVO,
-    ESTADO_ESCUCHANDO,
-    ESTADO_EJECUTANDO,
     ESTADO_PROCESANDO
 )
 
