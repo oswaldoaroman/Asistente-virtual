@@ -21,8 +21,20 @@ class AudioSkill(BaseSkill):
         dispositivo = self.buscar_dispositivo(texto)
         if dispositivo is None:
             print("No encontré ningún dispositivo parecido.")
+            subprocess.run(
+                [
+                        "notify-send",
+                        "No encontré ningún dispositivo de audio parecido."
+                ]
+            )
             return False
         print(f"Cambiando salida a: {dispositivo['nombre']}")
+        subprocess.run(
+            [
+                        "notify-send",
+                        "Cambiando salida de audio a: " + dispositivo["nombre"]
+            ]
+        )
         subprocess.run(
             [
                 "wpctl",

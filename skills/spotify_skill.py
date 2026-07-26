@@ -54,7 +54,7 @@ class AudioSkill(BaseSkill):
             return True
 
         if "spotify" in texto:
-            subprocess.Popen("systemd-run", "--user", "spotify")
+            subprocess.Popen(["systemd-run", "--user", "spotify-launcher"])
 
         return False
 
